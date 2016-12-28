@@ -108,8 +108,8 @@ class FuzzyClassifier(object):
                 if i == selected:
                     shapes[i].set_color('red')
 
-            ax.set_xlim(0, 1000)
-            ax.set_ylim(0, 1000)
+            ax.set_xlim(np.min(self.X), np.max(self.X))
+            ax.set_ylim(np.min(self.X), np.max(self.X))
         plt.show()
 
     def show_plot(self):
@@ -128,8 +128,8 @@ class FuzzyClassifier(object):
             except FuzzyClassifierException as e:
                 print e, "No shape or center implemented!"
 
-        ax.set_xlim(0, 1000)
-        ax.set_ylim(0, 1000)
+        ax.set_xlim(np.min(self.X), np.max(self.X))
+        ax.set_ylim(np.min(self.X), np.max(self.X))
         plt.show()
 
     def scatter_clusters_data(self):
@@ -142,10 +142,10 @@ class FuzzyClassifier(object):
             ci = np.argmax(self.U[j, :])
             clustered_data[ci].append(x)
 
-        colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow']
+        colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow','0.75','0.25','black']
         for i, xs in enumerate(clustered_data):
             xs = np.array(xs)
             plt.scatter(xs[:, 0], xs[:, 1], color=colors[i], lw=0)
-        plt.xlim(0, 1000)
-        plt.ylim(0, 1000)
+        plt.xlim(np.min(self.X), np.max(self.X))
+        plt.ylim(np.min(self.X), np.max(self.X))
         plt.show()
