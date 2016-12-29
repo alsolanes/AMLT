@@ -1,6 +1,5 @@
 from scipy.spatial.distance import cdist
 import numpy as np
-
 from sklearn.utils import check_random_state
 
 
@@ -37,11 +36,6 @@ References
    and algorithms for pattern recognition and image processing. Kluwer Academic
    Publishers, 2005.
 """
-import numpy as np
-from scipy.spatial.distance import cdist
-
-from .initialization import initialize_random, initialize_probabilistic
-
 
 class CMeans:
     """Base class for C-means algorithms.
@@ -201,7 +195,7 @@ class CMeans:
                 self.initialization(x, self.n_clusters, self.random_state)[1]
 
 
-class Fuzzy(CMeans):
+class FCM(CMeans):
     """Base class for fuzzy C-means clusters.
     Attributes
     ----------
@@ -220,7 +214,7 @@ class Fuzzy(CMeans):
     m = 2
 
     def __init__(self, *args, **kwargs):
-        super(Fuzzy, self).__init__(*args, **kwargs)
+        super(FCM, self).__init__(*args, **kwargs)
         if 'm' in kwargs:
             self.m = kwargs['m']
 
@@ -234,9 +228,7 @@ class Fuzzy(CMeans):
         return np.sum(self.fuzzifier(self.memberships) * distances)
 
 
-
-
-class GustafsonKesselMixin(Fuzzy):
+class GKFCM(FCM):
     """Gives clusters ellipsoidal character.
     The Gustafson-Kessel algorithm redefines the distance measurement such that
     clusters may adopt ellipsoidal shapes. This is achieved through updates to
@@ -261,7 +253,7 @@ class GustafsonKesselMixin(Fuzzy):
             (n_samples, n_features)
             The original data.
         """
-        j_list = super(GustafsonKesselMixin, self).fit(x)
+        j_list = super(GKFCM, self).fit(x)
         self.covariance = self.calculate_covariance(x)
         return j_list
 

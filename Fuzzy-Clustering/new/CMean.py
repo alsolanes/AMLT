@@ -1,21 +1,31 @@
 import matplotlib.patches as shapes
 import numpy as np
 
-from ..BaseFuzzyCluster import BaseFuzzyCluster
-
-
-class CMeanCluster(BaseFuzzyCluster):
+class CMeanCluster(object):
     def __init__(self, high, dim):
         self.r = np.random.uniform(high/5)
         self.v = np.random.uniform(high, size=dim)
 
-    def _update(self, xs, uis, m):
+
+    def update(self, xs, us, m, ci):
+        """
+        update its variables based on membership values
+        :param xs: list of data points
+        :param us: list of memberships for all clusteres
+        :param m:
+        :param ci: cluster num
+        """
+        uis = us[:,ci]
         self.v = sum([uis[i]**m * xs[i] for i in range(len(xs))]) / sum([uis[i]**m for i in range(len(xs))])
         self.r = sum([uis[i]**m * np.linalg.norm(xs[i]-self.v) for i in range(len(xs))]) / sum([uis[i]**m for i in range(len(xs))])
-        # self.v = sum([uis[i] * xs[i] for i in range(len(xs))]) / sum(uis)
-        # self.r = sum([uis[i] * np.linalg.norm(xs[i]-self.v) for i in range(len(xs))]) / sum(uis)
 
     def distance(self, x):
+        """
+        distance from cluster to point x
+        usage in membership evaluation
+        :param x: data point
+        :return: distance**2
+        """
         return np.linalg.norm(x-self.v)**2
 
     def __repr__(self):

@@ -2,8 +2,6 @@ import numpy as np
 import math
 from matplotlib import pyplot as plt
 
-from lib import FuzzyClassifierException
-
 
 class FuzzyClassifier(object):
     """
@@ -120,12 +118,9 @@ class FuzzyClassifier(object):
         ax.scatter(self.X[:, 0], self.X[:, 1], lw=0)
 
         for i, c in enumerate(self.C):
-            try:
-                ax.scatter(c.center()[0], c.center()[1], color='black')
-                ax.add_artist(shapes[i])
-                shapes[i].set_alpha(.5)
-            except FuzzyClassifierException as e:
-                print e, "No shape or center implemented!"
+            ax.scatter(c.center()[0], c.center()[1], color='black')
+            ax.add_artist(shapes[i])
+            shapes[i].set_alpha(.5)
 
         ax.set_xlim(np.min(self.X), np.max(self.X))
         ax.set_ylim(np.min(self.X), np.max(self.X))
