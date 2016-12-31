@@ -2,8 +2,8 @@ import matplotlib.patches as shapes
 import numpy as np
 
 class GKCluster(object):
-    def __init__(self, high, dim, r=200, det=1):
-        self.r = r
+    def __init__(self, high, dim, det=1):
+        self.r = high/5
         self.v = np.random.uniform(high, size=dim)
         self.det = det
         self.A = np.array([[det**.5, 0], [0, det**.5]])
@@ -12,7 +12,7 @@ class GKCluster(object):
         """
         update its variables based on membership values
         :param xs: list of data points
-        :param uis: list of memberships for this cluster
+        :param us: list of memberships for this cluster
         :param m:
         """
         uis = us[:,ci]
@@ -29,9 +29,6 @@ class GKCluster(object):
         return "GustafsonKessel cluster# v={0} A={1}".format(self.v, self.A)
 
     def draw(self):
-        if self.v.shape[0] > 2:
-            raise FuzzyClassifierException("draw works for 2d data not more!")
-
         def eigsorted(cov):
             vals, vecs = np.linalg.eigh(cov)
             order = vals.argsort()[::-1]
@@ -40,7 +37,6 @@ class GKCluster(object):
         vals, vecs = eigsorted(self.A)
         theta = np.degrees(np.arctan2(*vecs[:, 0][::-1]))
 
-        # Width and height are "full" widths, not radius
         height, width = self.r * np.sqrt(vals)
         res = shapes.Ellipse(xy=self.v, width=width, height=height, angle=theta)
         return res

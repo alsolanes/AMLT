@@ -37,9 +37,9 @@ class FuzzyClassifier(object):
             dif = self.update_memberships()
 
             if dif < delta:
-                print "###", iteration
-                print "finish", dif, ' < ', delta
-                print "distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C])
+                print ("###", iteration)
+                print ("finish", dif, ' < ', delta)
+                print ("distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C]))
                 if plot_level == 1:
                     self.show_plot()
                 elif plot_level == 2:
@@ -48,14 +48,14 @@ class FuzzyClassifier(object):
 
             if verbose_level == 1:
                 if iteration % verbose_iteration == 0:
-                    print "###", iteration
-                    print dif, ' > ', delta
-                    print "distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C])
+                    print ("###", iteration)
+                    print (dif, ' > ', delta)
+                    print ("distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C]))
             elif verbose_level == 2:
                 if iteration % verbose_iteration == 0:
-                    print "###", iteration
-                    print dif, ' > ', delta
-                    print "distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C])
+                    print ("###", iteration)
+                    print (dif, ' > ', delta)
+                    print ("distance sum: ", sum([sum([c.distance(x) for x in self.X]) for c in self.C]))
                     self.show_detailed_plot()
 
             if iteration % delta_increase_iteration == 0:
@@ -111,7 +111,6 @@ class FuzzyClassifier(object):
 
     def show_plot(self):
         shapes = [c.draw() for c in self.C]
-
         fig = plt.figure(1)
         ax = fig.add_subplot(111, aspect='equal')
 
@@ -128,7 +127,7 @@ class FuzzyClassifier(object):
 
     def scatter_clusters_data(self):
         if self.X.shape[1] > 2:
-            print "just 2d data can be scattered!"
+            print ("Only 2d data can be plotted!")
             return
 
         clustered_data = [[] for i in range(len(self.C))]
