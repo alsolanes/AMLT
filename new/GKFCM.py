@@ -84,6 +84,18 @@ def generate_2d(num_clusters, num_samples=1000, seed=35):
                  np.array([np.random.randint(noise), np.random.randint(noise)])
     return res,y
     
+def scatter_clusters_data(data,y):
+        if data.shape[1] > 2:
+            print ("Only 2d data can be plotted!")
+            return
+        colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow','0.75','0.25','black','0.5']
+        for i, xs in enumerate(data):
+            xs = np.array(xs)
+            plt.scatter(xs[0], xs[1], color=colors[y[i]], lw=0)
+        plt.xlim(np.min(data), np.max(data))
+        plt.ylim(np.min(data), np.max(data))
+        plt.show()
+    
 if __name__ == "__main__":
     
     num_clusters = 5
@@ -91,7 +103,7 @@ if __name__ == "__main__":
     print('Generating sample data with {0} clusters and {1} samples...'.format(num_clusters,num_samples))
     data,y = generate_2d(num_clusters, num_samples)
     scatter_2d(data)
-    
+    scatter_clusters_data(data,y)
     print('Calculating memberships')
     fc = GKFCM(num_clusters=num_clusters,m=2, seed=5)
     memberships=fc.fit(data)

@@ -54,23 +54,35 @@ def scatter_2d(data):
     plt.show()
     
     
-def generate_2d(clusters, num_samples=1000, seed=35):
+def generate_2d(num_clusters, num_samples=1000, seed=35):
     np.random.seed(seed)
     noise=10
     res = np.empty((num_samples, 2))
-    centers = num_samples/5 + np.random.uniform(size=(clusters, 2)) * num_samples*clusters/5
-    radiuses = 50 + np.random.uniform(size=clusters) * num_samples/5
+    centers = num_samples/5 + np.random.uniform(size=(num_clusters, 2)) * num_samples*num_clusters/5
+    radiuses = 50 + np.random.uniform(size=num_clusters) * num_samples/5
     y = []
     for i in range(num_samples):
         
-        ind = np.random.randint(clusters)
+        ind = np.random.randint(num_clusters)
         y.append(ind)
-        alpha = np.random.uniform(high=2*math.pi)
+        alpha = np.random.uniform(high=2*np.math.pi)
         r = np.random.uniform(high=radiuses[ind])
         res[i] = centers[ind] + \
-                 np.array([r * math.cos(alpha), r * math.sin(alpha)]) + \
+                 np.array([r * np.math.cos(alpha), r * np.math.sin(alpha)]) + \
                  np.array([np.random.randint(noise), np.random.randint(noise)])
     return res,y
+    
+def scatter_clusters_data(data,y):
+        if data.shape[1] > 2:
+            print ("Only 2d data can be plotted!")
+            return
+        colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow','0.75','0.25','black','0.5']
+        for i, xs in enumerate(data):
+            xs = np.array(xs)
+            plt.scatter(xs[0], xs[1], color=colors[y[i]], lw=0)
+        plt.xlim(np.min(data), np.max(data))
+        plt.ylim(np.min(data), np.max(data))
+        plt.show()
     
 
         
@@ -81,7 +93,7 @@ if __name__ == "__main__":
     print('Generating sample data with {0} clusters and {1} samples...'.format(num_clusters,num_samples))
     data,y = generate_2d(num_clusters, num_samples)
     scatter_2d(data)
-    
+    scatter_clusters_data(data,y)
     fc = FCM(num_clusters=num_clusters,m=2, seed=5)
     clustered_data=fc.fit(data)
     print (clustered_data)
@@ -92,3 +104,4 @@ if __name__ == "__main__":
     print(cross_val)
     for i in range(num_clusters):
         print('Cluster {0} has {1} incorrect samples classified from {2}'.format(i,num_samples/num_clusters-np.max(cross_val[i]),num_samples/num_clusters))
+    
