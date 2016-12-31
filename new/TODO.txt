@@ -1,0 +1,5 @@
+TODO:
+1. Change some names of functions
+2. Merge auxiliar files into one single one
+3. Remove prints from fit
+4. Remove whole add
