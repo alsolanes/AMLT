@@ -6,15 +6,14 @@ Created on Sat Dec 31 16:30:13 2016
 @author: aleix
 """
 
-import matplotlib.patches as shapes
 import numpy as np
-import math
 from matplotlib import pyplot as plt
-import CMean, FuzzyClustring, GustafsonKessel
+from BaseClustering import GKCluster,BaseClustering
+from sklearn import metrics
 
 
 class GKFCM(object):
-    def __init__(self, num_clusters , m=2, seed=35,det=1):
+    def __init__(self, num_clusters , m=2, plot_level=0,seed=35,det=1):
         self.seed=seed
         self.m=m
         self.num_clusters=num_clusters
@@ -23,13 +22,14 @@ class GKFCM(object):
         self.det = det
         self.A = np.array([[det**.5, 0], [0, det**.5]])
         self.results=[]
+        self.plot_level=plot_level
 
     def fit(self,data):
         self.data=data
         self.r = np.max(data)/5
-        clusters = [GustafsonKessel.GKCluster(np.max(data), 2) for k in range(self.num_clusters)]
-        fc = FuzzyClustring.FuzzyClassifier(data, clusters, m=self.m)
-        fc.fit(delta=.001, increase_iteration=20, increase_factor=1.2, plot_level=1, verbose_level=0, verbose_iteration=100) 
+        clusters = [GKCluster(np.max(data), 2) for k in range(self.num_clusters)]
+        fc = BaseClustering(data, clusters, m=self.m)
+        fc.fit(delta=.001, increase_iteration=20, increase_factor=1.2, plot_level=self.plot_level, verbose_level=0, verbose_iteration=100) 
         self.classifier=fc
         self.centers=fc.C
         self.results = []
@@ -39,9 +39,13 @@ class GKFCM(object):
             clustered_data[ci].append(x)
             self.results.append(ci)
         self.clustered_data = clustered_data
+        if len(data[0])==2:
+            self.score=metrics.silhouette_score(np.array(self.data), np.array(self.results), metric='euclidean')
+        else:
+            self.score=-1
         return fc.U
         
-    def scatter_clusters_data(self):
+    def scatter_clusters_data(self,axis=1):
         if self.data.shape[1] > 2:
             print ("Only 2d data can be plotted!")
             return
@@ -51,6 +55,8 @@ class GKFCM(object):
             plt.scatter(xs[:, 0], xs[:, 1], color=colors[i], lw=0)
         plt.xlim(np.min(self.data), np.max(self.data))
         plt.ylim(np.min(self.data), np.max(self.data))
+        if axis==0:
+            plt.axis('off')
         plt.show()
     
     def get_memberships(self):
@@ -114,3 +120,4 @@ if __name__ == "__main__":
     print(cross_val)
     for i in range(num_clusters):
         print('Cluster {0} has {1} incorrect samples classified from {2}'.format(i,num_samples/num_clusters-np.max(cross_val[i]),num_samples/num_clusters))
+    print('Score (Silhuete coefficient):{0}'.format(fc.score))

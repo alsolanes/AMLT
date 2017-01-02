@@ -1,10 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 31 16:30:13 2016
+
+@author: aleix
+"""
 import numpy as np
-import math
 from matplotlib import pyplot as plt
-import CMean, FuzzyClustring
+from BaseClustering import CMeanCluster,BaseClustering
+from sklearn import metrics
 
 class FCM(object):
-    def __init__(self, num_clusters, m=2, seed=None):
+    def __init__(self, num_clusters, m=2, plot_level=0, seed=None):
         self.seed=seed 
         self.num_clusters = num_clusters
         self.m = m
@@ -12,12 +19,15 @@ class FCM(object):
         self.radius = []
         self.classifier = []
         self.results= []
+        self.data=[]
+        self.score=[]
+        self.plot_level=plot_level
 
     def fit(self, data):
         self.data=data
-        clusters = [CMean.CMeanCluster(np.max(data), 2) for k in range(num_clusters)]
-        fc = FuzzyClustring.FuzzyClassifier(data, clusters, self.m)
-        fc.fit(delta=.001, increase_iteration=20, increase_factor=1.2, plot_level=1, verbose_level=0, verbose_iteration=100)
+        clusters = [CMeanCluster(np.max(data), 2) for k in range(self.num_clusters)]
+        fc = BaseClustering(data, clusters, self.m)
+        fc.fit(delta=.001, increase_iteration=20, increase_factor=1.2, plot_level=self.plot_level, verbose_level=0, verbose_iteration=100)
         self.classifier=fc
         self.centers=fc.C
         self.results=[]
@@ -27,9 +37,13 @@ class FCM(object):
             clustered_data[ci].append(x)
             self.results.append(ci)
         self.clustered_data = clustered_data
+        if len(data[0])==2:
+            self.score=metrics.silhouette_score(np.array(self.data), np.array(self.results), metric='euclidean')
+        else:
+            self.score=-1
         return self.classifier.U
         
-    def scatter_clusters_data(self):
+    def scatter_clusters_data(self,axis=1):
         if self.data.shape[1] > 2:
             print ("Only 2d data can be plotted!")
             return
@@ -40,6 +54,8 @@ class FCM(object):
             plt.scatter(xs[:, 0], xs[:, 1], color=colors[i], lw=0)
         plt.xlim(np.min(self.data), np.max(self.data))
         plt.ylim(np.min(self.data), np.max(self.data))
+        if not axis:
+            plt.axis('off')
         plt.show()
     
     def get_memberships(self):
@@ -104,4 +120,4 @@ if __name__ == "__main__":
     print(cross_val)
     for i in range(num_clusters):
         print('Cluster {0} has {1} incorrect samples classified from {2}'.format(i,num_samples/num_clusters-np.max(cross_val[i]),num_samples/num_clusters))
-    
+    print('Score (Silhuete coefficient):{0}'.format(fc.score))
