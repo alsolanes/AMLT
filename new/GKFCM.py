@@ -21,7 +21,7 @@ class GKFCM(object):
         self.radius=[]
         self.det = det
         self.A = np.array([[det**.5, 0], [0, det**.5]])
-        self.results=[]
+        self.labels=[]
         self.plot_level=plot_level
 
     def fit(self,data):
@@ -32,15 +32,15 @@ class GKFCM(object):
         fc.fit(delta=.001, increase_iteration=20, increase_factor=1.2, plot_level=self.plot_level, verbose_level=0, verbose_iteration=100) 
         self.classifier=fc
         self.centers=fc.C
-        self.results = []
+        self.labels = []
         clustered_data = [[] for i in range(len(self.centers))]
         for j, x in enumerate(self.data):
             ci = np.argmax(self.get_memberships()[j, :])
             clustered_data[ci].append(x)
-            self.results.append(ci)
+            self.labels.append(ci)
         self.clustered_data = clustered_data
         if len(data[0])==2:
-            self.score=metrics.silhouette_score(np.array(self.data), np.array(self.results), metric='euclidean')
+            self.score=metrics.silhouette_score(np.array(self.data), np.array(self.labels), metric='euclidean')
         else:
             self.score=-1
         return fc.U
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     fc.scatter_clusters_data()
     print('Memberships obtained:',memberships)
     from sklearn.metrics import confusion_matrix
-    cross_val=confusion_matrix(fc.results,y)
+    cross_val=confusion_matrix(fc.labels,y)
     print(cross_val)
     for i in range(num_clusters):
         print('Cluster {0} has {1} incorrect samples classified from {2}'.format(i,num_samples/num_clusters-np.max(cross_val[i]),num_samples/num_clusters))
